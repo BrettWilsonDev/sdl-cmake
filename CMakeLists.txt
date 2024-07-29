@@ -13,6 +13,9 @@ set(CMAKE_CXX_STANDARD 20)
 # sdl - wasm unknown
 set(useSdl ON)
 
+# glad - wasm unknown
+set(useGlad ON)
+
 # imgui files - wasm supported
 set(useImGui OFF)
 
@@ -122,6 +125,32 @@ if(useSdl)
         
     list(APPEND LIBRARIES SDL3_image::SDL3_image-static)
 
+endif()
+
+if(useGlad)
+    set(dep glad)
+    add_git_dependency(
+        ${dep}
+        https://github.com/Dav1dde/glad.git
+        v0.1.36
+    )
+    
+    FetchContent_GetProperties(${dep})
+    if(NOT ${dep}_POPULATED)
+        FetchContent_Populate(${dep})
+
+        set(GLAD_PROFILE "core" CACHE STRING "OpenGL profile")
+        set(GLAD_API "gl=" CACHE STRING "API type/version pairs, like \"gl=3.2,gles=\", no version means latest")
+        set(GLAD_GENERATOR "c" CACHE STRING "Language to generate the binding for")
+
+        set(GLAD_PROFILE "core"	CACHE STRING "OpenGL profile")
+
+        set(GLAD_GENERATOR "c"	CACHE STRING "Language to generate the binding for")
+        
+        add_subdirectory(${${dep}_SOURCE_DIR} ${${dep}_BINARY_DIR})
+    endif()
+
+    list(APPEND LIBRARIES ${dep})
 endif()
 
 
