@@ -76,19 +76,15 @@ function(add_git_dependency libName gitURL gitTag)
             FetchContent_MakeAvailable(${libName})
         endif()
 
-        # exclude lib to avoid errors
-        if(NOT "${libName}" STREQUAL "libname" AND NOT "${libName}" STREQUAL "rlImGui")
-            # target_compile_options(${libName} PRIVATE "-w")
-        endif()  
 endfunction()
 
 #add new dependencies here
 # sld2
 if(useSdl)
-    set(dep SDL3)
     set(SDL3IMAGE_INSTALL OFF)
     set(BUILD_SHARED_LIBS FALSE)
 
+    set(dep SDL3)
     add_git_dependency(
         ${dep}
         https://github.com/libsdl-org/SDL.git
@@ -104,15 +100,15 @@ if(useSdl)
 endif()
 
 if(useSdl)
-    set(dep SDL3_image)
     set(SDL3IMAGE_INSTALL OFF)
     set(BUILD_SHARED_LIBS FALSE)
 
     if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         set(SDL3IMAGE_AVIF OFF CACHE BOOL "Support loading AVIF images" FORCE)
     endif()
-
-
+    
+    
+    set(dep SDL3_image)
     add_git_dependency(
         ${dep}
         https://github.com/libsdl-org/SDL_image.git
@@ -122,6 +118,8 @@ if(useSdl)
     FetchContent_GetProperties(${dep})
     if(NOT ${dep}_POPULATED)
     endif()
+
+    include_directories(RECURSE build/_deps/sdl3-src/include/SDL3/)
         
     list(APPEND LIBRARIES SDL3_image::SDL3_image-static)
 
@@ -132,7 +130,7 @@ if(useGlad)
     add_git_dependency(
         ${dep}
         https://github.com/Dav1dde/glad.git
-        v0.1.36
+        master
     )
     
     FetchContent_GetProperties(${dep})
@@ -143,13 +141,12 @@ if(useGlad)
         set(GLAD_API "gl=" CACHE STRING "API type/version pairs, like \"gl=3.2,gles=\", no version means latest")
         set(GLAD_GENERATOR "c" CACHE STRING "Language to generate the binding for")
 
-        set(GLAD_PROFILE "core"	CACHE STRING "OpenGL profile")
-
-        set(GLAD_GENERATOR "c"	CACHE STRING "Language to generate the binding for")
+        find_package(OpenGL REQUIRED)
         
         add_subdirectory(${${dep}_SOURCE_DIR} ${${dep}_BINARY_DIR})
     endif()
 
+    # add the dependency here to be linked
     list(APPEND LIBRARIES ${dep})
 endif()
 
