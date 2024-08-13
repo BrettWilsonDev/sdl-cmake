@@ -10,11 +10,14 @@ set(CMAKE_CXX_STANDARD 20)
 
 # toggle libs to be used with ON and OFF
 
-# sdl - wasm unknown
-set(useSdl ON)
+# sdl3 - wasm unknown
+set(useSdl3 ON)
+
+# sdl2 - wasm unknown
+set(useSdl2 OFF)
 
 # glad - wasm unknown
-set(useGlad ON)
+set(useGlad OFF)
 
 # imgui files - wasm supported
 set(useImGui OFF)
@@ -78,9 +81,8 @@ function(add_git_dependency libName gitURL gitTag)
 
 endfunction()
 
-#add new dependencies here
-# sld2
-if(useSdl)
+# sld3
+if(useSdl3)
     set(SDL3IMAGE_INSTALL OFF)
     set(BUILD_SHARED_LIBS FALSE)
 
@@ -99,7 +101,7 @@ if(useSdl)
 
 endif()
 
-if(useSdl)
+if(useSdl3)
     set(SDL3IMAGE_INSTALL OFF)
     set(BUILD_SHARED_LIBS FALSE)
 
@@ -122,6 +124,53 @@ if(useSdl)
     include_directories(RECURSE build/_deps/sdl3-src/include/SDL3/)
         
     list(APPEND LIBRARIES SDL3_image::SDL3_image-static)
+
+endif()
+
+#add new dependencies here
+# sld2
+if(useSdl2)
+    set(SDL2IMAGE_INSTALL OFF)
+    set(BUILD_SHARED_LIBS FALSE)
+
+    set(dep SDL2)
+    add_git_dependency(
+        ${dep}
+        https://github.com/libsdl-org/SDL.git
+        SDL2
+    )
+    
+    FetchContent_GetProperties(${dep})
+    if(NOT ${dep}_POPULATED)
+    endif()
+
+    list(APPEND LIBRARIES SDL2main SDL2-static)
+
+endif()
+
+if(useSdl2)
+    set(SDL2IMAGE_INSTALL OFF)
+    set(BUILD_SHARED_LIBS FALSE)
+
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+        set(SDL2IMAGE_AVIF OFF CACHE BOOL "Support loading AVIF images" FORCE)
+    endif()
+    
+    
+    set(dep SDL2_image)
+    add_git_dependency(
+        ${dep}
+        https://github.com/libsdl-org/SDL_image.git
+        SDL2
+    )
+    
+    FetchContent_GetProperties(${dep})
+    if(NOT ${dep}_POPULATED)
+    endif()
+
+    include_directories(RECURSE build/_deps/sdl2-src/include/SDL2/)
+        
+    list(APPEND LIBRARIES SDL2_image)
 
 endif()
 
