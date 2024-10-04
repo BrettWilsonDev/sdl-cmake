@@ -106,7 +106,7 @@ if(useSdl3)
     set(BUILD_SHARED_LIBS FALSE)
 
     if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-        set(SDL3IMAGE_AVIF OFF CACHE BOOL "Support loading AVIF images" FORCE)
+        set(SDLIMAGE_AVIF OFF CACHE BOOL "Support loading AVIF images" FORCE)
     endif()
     
     
