@@ -1,48 +1,28 @@
 cmake_minimum_required(VERSION 3.22)
+
+# Get project name from the folder name
 get_filename_component(PROJECT_NAME ${CMAKE_CURRENT_LIST_DIR} NAME)
 project(${PROJECT_NAME} CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 
 ##########################################################################################
-# Project libs
+# Configurable options
 ##########################################################################################
 
-# toggle libs to be used with ON and OFF
-
-# sdl3 - wasm unknown
-set(useSdl3 ON)
-
-# sdl2 - wasm unknown
-set(useSdl2 OFF)
-
-# glad - wasm unknown
-set(useGlad OFF)
-
-# imgui files - wasm supported
-set(useImGui OFF)
-
-# ldtk loader used with LDtk
-set(useLDtkLoader OFF)
-
-# fmt library - wasm supported
-set(useFmt OFF)
-
-# box2d physics 2d - wasm untested
-set(useBox2d OFF)
-
-# bullet physics 3d - wasm supported
-set(useBullet3 OFF)
-
-# note: wont play nice with gcc use msvc/clang instead
-# reactphysics 3d - wasm unsupported
-set(useReactPhysics3D OFF)
-
-# Jolt Physics 3d - wasm supported
-set(useJoltPhysics OFF)
+option(USE_SDL3 "Use SDL3" ON)
+option(USE_SDL2 "Use SDL2" OFF)
+option(USE_GLAD "Use Glad" OFF)
+option(USE_IMGUI "Use ImGui" OFF)
+option(USE_LDTKLOADER "Use LDtk Loader" OFF)
+option(USE_FMT "Use fmt" OFF)
+option(USE_BOX2D "Use Box2D" OFF)
+option(USE_BULLET3 "Use Bullet Physics 3D" OFF)
+option(USE_REACTPHYSICS3D "Use React Physics 3D" OFF)
+option(USE_JOLTPHYSICS "Use Jolt Physics 3D" OFF)
 
 ##########################################################################################
-# pre lib include settings
+# MSVC runtime linking
 ##########################################################################################
 
 # this is here to ensure the runtime is linked staticly for msvc
@@ -53,6 +33,10 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
     endif()
 endif()
+
+##########################################################################################
+# Platform Configuration
+##########################################################################################
 
 if (NOT DEFINED PLATFORM)
     set(PLATFORM "default")
@@ -81,8 +65,11 @@ function(add_git_dependency libName gitURL gitTag)
 
 endfunction()
 
-# sld3
-if(useSdl3)
+##########################################################################################
+# SDL3 Setup
+##########################################################################################
+
+if(USE_SDL3)
     set(SDL3IMAGE_INSTALL OFF)
     set(BUILD_SHARED_LIBS FALSE)
 
@@ -127,9 +114,11 @@ if(useSdl3)
 
 endif()
 
-#add new dependencies here
-# sld2
-if(useSdl2)
+##########################################################################################
+# SDL2 Setup
+##########################################################################################
+
+if(USE_SDL2)
     set(SDL2IMAGE_INSTALL OFF)
     set(BUILD_SHARED_LIBS FALSE)
 
@@ -174,7 +163,11 @@ if(useSdl2)
 
 endif()
 
-if(useGlad)
+##########################################################################################
+# Glad Setup
+##########################################################################################
+
+if(USE_GLAD)
     set(dep glad)
     add_git_dependency(
         ${dep}
@@ -200,16 +193,22 @@ if(useGlad)
 endif()
 
 
-# imgui files
-if(useImGui)
+##########################################################################################
+# ImGui Setup
+##########################################################################################
+
+if(USE_IMGUI)
 endif()
 
 # part of imgui files
 if(useImGui)
 endif()
 
-# ldtk loader
-if(useLDtkLoader)
+##########################################################################################
+# LDtk Loader Setup
+##########################################################################################
+
+if(USE_LDTKLOADER)
     set(dep LDtkLoader)
     add_git_dependency(
         ${dep}
@@ -223,8 +222,11 @@ if(useLDtkLoader)
     list(APPEND LIBRARIES ${dep})
 endif()
 
-# fmt
-if(useFmt)
+##########################################################################################
+# fmt Setup
+##########################################################################################
+
+if(USE_FMT)
     set(dep fmt)
     add_git_dependency(
         ${dep}
@@ -238,8 +240,11 @@ if(useFmt)
     list(APPEND LIBRARIES ${dep})
 endif()
 
-# box2d
-if(useBox2d)
+##########################################################################################
+# Box2D Setup
+##########################################################################################
+
+if(USE_BOX2D)
     set(BOX2D_BUILD_TESTBED OFF CACHE BOOL "" FORCE) # don't build the supplied examples
     set(BOX2D_BUILD_UNIT_TESTS OFF CACHE BOOL "" FORCE) # don't build the supplied examples
 
@@ -254,8 +259,11 @@ if(useBox2d)
     list(APPEND LIBRARIES ${dep})
 endif()
 
-# bullet physics 3d
-if(useBullet3)
+##########################################################################################
+# Bullet Physics 3D Setup
+##########################################################################################
+
+if(USE_BULLET3)
     set(BUILD_EXTRAS OFF CACHE BOOL "" FORCE) # don't build the supplied examples
     set(BUILD_CPU_DEMOS OFF CACHE BOOL "" FORCE) # don't build the supplied examples
     set(BUILD_UNIT_TESTS OFF CACHE BOOL "" FORCE) # don't build the supplied examples
@@ -282,8 +290,11 @@ if(useBullet3)
     list(APPEND LIBRARIES BulletSoftBody)
 endif()
 
-# react physics
-if(useReactPhysics3D)
+##########################################################################################
+# ReactPhysics3D Setup
+##########################################################################################
+
+if(USE_REACTPHYSICS3D)
     set(dep reactphysics3d)
     add_git_dependency(
         ${dep}
@@ -298,8 +309,11 @@ if(useReactPhysics3D)
     list(APPEND LIBRARIES ${dep})
 endif()
 
-# jolt physics
-if(useJoltPhysics)
+##########################################################################################
+# Jolt Physics Setup
+##########################################################################################
+
+if(USE_JOLTPHYSICS)
     set(DOUBLE_PRECISION OFF)
     set(GENERATE_DEBUG_SYMBOLS ON)
     set(CROSS_PLATFORM_DETERMINISTIC OFF)
@@ -384,7 +398,7 @@ endif()
 
 
 ##########################################################################################
-# compiler settings
+# Compiler and linker flags
 ##########################################################################################
 
 if(NOT ${PLATFORM} STREQUAL "Web")
@@ -422,7 +436,7 @@ endif()
 
 
 ##########################################################################################
-# custom commands
+# Build flags and additional settings
 ##########################################################################################
 
 add_definitions( -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} )
@@ -430,11 +444,6 @@ add_definitions( -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} )
 # for web build when using emscripten
 if(ASYNCIFY)
 endif()
-
-
-##########################################################################################
-# Project build settings
-##########################################################################################
 
 if (useReactPhysics3D)
     set(CMAKE_CXX_FLAGS "-m64")
