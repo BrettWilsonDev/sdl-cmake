@@ -10,8 +10,8 @@ set(CMAKE_CXX_STANDARD 20)
 # Configurable options
 ##########################################################################################
 
-option(USE_SDL3 "Use SDL3" ON)
-option(USE_SDL2 "Use SDL2" OFF)
+option(USE_SDL3 "Use SDL3" OFF)
+option(USE_SDL2 "Use SDL2" ON)
 option(USE_GLAD "Use Glad" OFF)
 option(USE_IMGUI "Use ImGui" OFF)
 option(USE_LDTKLOADER "Use LDtk Loader" OFF)
@@ -88,7 +88,7 @@ if(USE_SDL3)
 
 endif()
 
-if(useSdl3)
+if(USE_SDL3)
     set(SDL3IMAGE_INSTALL OFF)
     set(BUILD_SHARED_LIBS FALSE)
 
@@ -118,7 +118,9 @@ endif()
 # SDL2 Setup
 ##########################################################################################
 
-if(USE_SDL2)
+if(USE_SDL2 AND NOT ${PLATFORM} STREQUAL "Web")
+    set(CMAKE_USE_FORWARD_SLASHES ON)
+
     set(SDL2IMAGE_INSTALL OFF)
     set(BUILD_SHARED_LIBS FALSE)
 
@@ -134,10 +136,9 @@ if(USE_SDL2)
     endif()
 
     list(APPEND LIBRARIES SDL2main SDL2-static)
-
 endif()
 
-if(useSdl2)
+if(USE_SDL2 AND NOT ${PLATFORM} STREQUAL "Web")
     set(SDL2IMAGE_INSTALL OFF)
     set(BUILD_SHARED_LIBS FALSE)
 
@@ -201,7 +202,7 @@ if(USE_IMGUI)
 endif()
 
 # part of imgui files
-if(useImGui)
+if(USE_IMGU)
 endif()
 
 ##########################################################################################
@@ -487,10 +488,20 @@ if (${PLATFORM} STREQUAL "Web")
     set(CMAKE_EXECUTABLE_SUFFIX ".html") # This line is used to set your executable to build with the emscripten html template so that you can directly open it.
     set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".html")
     if(NOT noAssets)
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_SDL=2 -lSDL -s USE_SDL_IMAGE=2 -s ALLOW_MEMORY_GROWTH=1 --use-preload-plugins -s SDL2_IMAGE_FORMATS=\"['png']\" -s GL_UNSAFE_OPTS=0 --preload-file assets/ --shell-file ../vendor/minshell.html")
+        if(USE_SDL2)
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_SDL=2 -lSDL -s USE_SDL_IMAGE=2 -s ALLOW_MEMORY_GROWTH=1 --use-preload-plugins -s SDL2_IMAGE_FORMATS=\"['png']\" -s GL_UNSAFE_OPTS=0 --preload-file assets/ --shell-file ../vendor/minshell.html")
+        endif()
+        if(USE_SDL3)
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s ALLOW_MEMORY_GROWTH=1 -s GL_UNSAFE_OPTS=0 --use-preload-plugins --preload-file assets/ --shell-file ../vendor/minshell.html")
+        endif(USE_SDL3)
         target_compile_definitions(${PROJECT_NAME} PUBLIC ASSETS_PATH="/assets/")
     else()
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_SDL=2 -lSDL -s USE_SDL_IMAGE=2 -s ALLOW_MEMORY_GROWTH=1 --use-preload-plugins -s SDL2_IMAGE_FORMATS=\"['png']\" -s GL_UNSAFE_OPTS=0 --shell-file ../vendor/minshell.html")
+        if(USE_SDL2)
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_SDL=2 -lSDL -s USE_SDL_IMAGE=2 -s ALLOW_MEMORY_GROWTH=1 --use-preload-plugins -s SDL2_IMAGE_FORMATS=\"['png']\" -s GL_UNSAFE_OPTS=0 --shell-file ../vendor/minshell.html")
+        endif()
+        if(USE_SDL3)
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s ALLOW_MEMORY_GROWTH=1 -s GL_UNSAFE_OPTS=0 --use-preload-plugins --shell-file ../vendor/minshell.html")
+        endif()
     endif()
 endif()
 
