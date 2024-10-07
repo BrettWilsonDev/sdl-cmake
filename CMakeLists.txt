@@ -198,72 +198,6 @@ endif()
 # ImGui Setup
 ##########################################################################################
 
-# if(USE_IMGUI)
-#     add_git_dependency(
-#         imgui
-#         https://github.com/ocornut/imgui.git
-#         head
-#     )
-
-#     FetchContent_GetProperties(imgui)
-#     if (NOT imgui_POPULATED)
-#         FetchContent_Populate(imgui)
-#         add_subdirectory(${imgui_SOURCE_DIR})
-#     endif ()
-# endif()
-
-
-# if(USE_IMGUI AND USE_SDL3)
-#     add_library(imgui
-#         ${imgui_SOURCE_DIR}/imgui.cpp
-#         ${imgui_SOURCE_DIR}/imgui.h
-#         ${imgui_SOURCE_DIR}/imconfig.h
-#         ${imgui_SOURCE_DIR}/imgui_demo.cpp
-#         ${imgui_SOURCE_DIR}/imgui_draw.cpp
-#         ${imgui_SOURCE_DIR}/imgui_internal.h
-#         ${imgui_SOURCE_DIR}/imgui_tables.cpp
-#         ${imgui_SOURCE_DIR}/imgui_widgets.cpp
-#         ${imgui_SOURCE_DIR}/imstb_rectpack.h
-#         ${imgui_SOURCE_DIR}/imstb_textedit.h
-#         ${imgui_SOURCE_DIR}/imstb_truetype.h
-#         ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.h
-#         ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
-#         ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.h
-#         ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp)
-
-#     target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR})
-#     target_include_directories(imgui PRIVATE ${CMAKE_CURRENT_LIST_DIR}/build/_deps/sdl3-src/include/)
-# endif()
-
-# # part of imgui files
-# if(USE_IMGUI AND USE_SDL2)
-#     add_library(imgui
-#         ${imgui_SOURCE_DIR}/imgui.cpp
-#         ${imgui_SOURCE_DIR}/imgui.h
-#         ${imgui_SOURCE_DIR}/imconfig.h
-#         ${imgui_SOURCE_DIR}/imgui_demo.cpp
-#         ${imgui_SOURCE_DIR}/imgui_draw.cpp
-#         ${imgui_SOURCE_DIR}/imgui_internal.h
-#         ${imgui_SOURCE_DIR}/imgui_tables.cpp
-#         ${imgui_SOURCE_DIR}/imgui_widgets.cpp
-#         ${imgui_SOURCE_DIR}/imstb_rectpack.h
-#         ${imgui_SOURCE_DIR}/imstb_textedit.h
-#         ${imgui_SOURCE_DIR}/imstb_truetype.h
-#         ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl2.h
-#         ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl2.cpp
-#         ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer2.h
-#         ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer2.cpp)
-
-#     target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR})
-#     target_include_directories(imgui PRIVATE ${CMAKE_CURRENT_LIST_DIR}/build/_deps/sdl2-src/include/)
-# endif()
-
-# if(USE_IMGUI)
-#     FetchContent_MakeAvailable(imgui)
-
-#     list(APPEND LIBRARIES imgui)
-# endif()
-
 if(USE_IMGUI)
     add_git_dependency(
         imgui
@@ -496,14 +430,6 @@ add_executable(${PROJECT_NAME})
 target_sources(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE})
 
-# Includes imgui source
-if(USE_IMGUI)
-    # make_directory(../src/imgui)
-    # target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/imgui)
-    # target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/build/_deps/imgui-src)
-endif()
-
-
 ##########################################################################################
 # Compiler and linker flags
 ##########################################################################################
@@ -582,10 +508,6 @@ endif()
 # SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Wswitch")
 # Set common compiler flags
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-
-# if (NOT DEFINED PLATFORM)
-#     set(PLATFORM "default")
-# endif()
 
 if (${PLATFORM} STREQUAL "Web")
     # Tell Emscripten to build an .html file.
