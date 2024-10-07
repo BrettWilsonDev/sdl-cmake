@@ -10,10 +10,10 @@ set(CMAKE_CXX_STANDARD 20)
 # Configurable options
 ##########################################################################################
 
-option(USE_SDL3 "Use SDL3" OFF)
-option(USE_SDL2 "Use SDL2" ON)
+option(USE_SDL3 "Use SDL3" ON)
+option(USE_SDL2 "Use SDL2" OFF)
 option(USE_GLAD "Use Glad" OFF)
-option(USE_IMGUI "Use ImGui" OFF)
+option(USE_IMGUI "Use ImGui" ON)
 option(USE_LDTKLOADER "Use LDtk Loader" OFF)
 option(USE_FMT "Use fmt" OFF)
 option(USE_BOX2D "Use Box2D" OFF)
@@ -198,11 +198,116 @@ endif()
 # ImGui Setup
 ##########################################################################################
 
-if(USE_IMGUI)
-endif()
+# if(USE_IMGUI)
+#     add_git_dependency(
+#         imgui
+#         https://github.com/ocornut/imgui.git
+#         head
+#     )
 
-# part of imgui files
-if(USE_IMGU)
+#     FetchContent_GetProperties(imgui)
+#     if (NOT imgui_POPULATED)
+#         FetchContent_Populate(imgui)
+#         add_subdirectory(${imgui_SOURCE_DIR})
+#     endif ()
+# endif()
+
+
+# if(USE_IMGUI AND USE_SDL3)
+#     add_library(imgui
+#         ${imgui_SOURCE_DIR}/imgui.cpp
+#         ${imgui_SOURCE_DIR}/imgui.h
+#         ${imgui_SOURCE_DIR}/imconfig.h
+#         ${imgui_SOURCE_DIR}/imgui_demo.cpp
+#         ${imgui_SOURCE_DIR}/imgui_draw.cpp
+#         ${imgui_SOURCE_DIR}/imgui_internal.h
+#         ${imgui_SOURCE_DIR}/imgui_tables.cpp
+#         ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+#         ${imgui_SOURCE_DIR}/imstb_rectpack.h
+#         ${imgui_SOURCE_DIR}/imstb_textedit.h
+#         ${imgui_SOURCE_DIR}/imstb_truetype.h
+#         ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.h
+#         ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp
+#         ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.h
+#         ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp)
+
+#     target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR})
+#     target_include_directories(imgui PRIVATE ${CMAKE_CURRENT_LIST_DIR}/build/_deps/sdl3-src/include/)
+# endif()
+
+# # part of imgui files
+# if(USE_IMGUI AND USE_SDL2)
+#     add_library(imgui
+#         ${imgui_SOURCE_DIR}/imgui.cpp
+#         ${imgui_SOURCE_DIR}/imgui.h
+#         ${imgui_SOURCE_DIR}/imconfig.h
+#         ${imgui_SOURCE_DIR}/imgui_demo.cpp
+#         ${imgui_SOURCE_DIR}/imgui_draw.cpp
+#         ${imgui_SOURCE_DIR}/imgui_internal.h
+#         ${imgui_SOURCE_DIR}/imgui_tables.cpp
+#         ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+#         ${imgui_SOURCE_DIR}/imstb_rectpack.h
+#         ${imgui_SOURCE_DIR}/imstb_textedit.h
+#         ${imgui_SOURCE_DIR}/imstb_truetype.h
+#         ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl2.h
+#         ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl2.cpp
+#         ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer2.h
+#         ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer2.cpp)
+
+#     target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR})
+#     target_include_directories(imgui PRIVATE ${CMAKE_CURRENT_LIST_DIR}/build/_deps/sdl2-src/include/)
+# endif()
+
+# if(USE_IMGUI)
+#     FetchContent_MakeAvailable(imgui)
+
+#     list(APPEND LIBRARIES imgui)
+# endif()
+
+if(USE_IMGUI)
+    add_git_dependency(
+        imgui
+        https://github.com/ocornut/imgui.git
+        head
+    )
+
+    FetchContent_GetProperties(imgui)
+    if (NOT imgui_POPULATED)
+    FetchContent_Populate(imgui)
+    add_subdirectory(${imgui_SOURCE_DIR})
+    endif()
+
+    if(USE_SDL3)
+        set(SDL_VERSION 3)
+    elseif(USE_SDL2)
+        set(SDL_VERSION 2)
+    else()
+        message(FATAL_ERROR "Either USE_SDL3 or USE_SDL2 must be defined")
+    endif()
+
+    add_library(imgui
+        ${imgui_SOURCE_DIR}/imgui.cpp
+        ${imgui_SOURCE_DIR}/imgui.h
+        ${imgui_SOURCE_DIR}/imconfig.h
+        ${imgui_SOURCE_DIR}/imgui_demo.cpp
+        ${imgui_SOURCE_DIR}/imgui_draw.cpp
+        ${imgui_SOURCE_DIR}/imgui_internal.h
+        ${imgui_SOURCE_DIR}/imgui_tables.cpp
+        ${imgui_SOURCE_DIR}/imgui_widgets.cpp
+        ${imgui_SOURCE_DIR}/imstb_rectpack.h
+        ${imgui_SOURCE_DIR}/imstb_textedit.h
+        ${imgui_SOURCE_DIR}/imstb_truetype.h
+        ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl${SDL_VERSION}.h
+        ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl${SDL_VERSION}.cpp
+        ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer${SDL_VERSION}.h
+        ${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer${SDL_VERSION}.cpp
+    )
+
+    target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR})
+    target_include_directories(imgui PRIVATE ${CMAKE_CURRENT_LIST_DIR}/build/_deps/sdl${SDL_VERSION}-src/include/)
+
+    FetchContent_MakeAvailable(imgui)
+    list(APPEND LIBRARIES imgui)
 endif()
 
 ##########################################################################################
@@ -392,9 +497,10 @@ target_sources(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE})
 
 # Includes imgui source
-if(useImGui)
-    make_directory(../src/imgui)
-    target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/imgui)
+if(USE_IMGUI)
+    # make_directory(../src/imgui)
+    # target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/imgui)
+    # target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/build/_deps/imgui-src)
 endif()
 
 
