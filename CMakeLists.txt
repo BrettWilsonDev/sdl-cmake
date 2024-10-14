@@ -467,10 +467,20 @@ else()
     target_link_libraries(${LIBRARIES})
 endif()
 
-
 ##########################################################################################
 # Build flags and additional settings
 ##########################################################################################
+
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/assets)
+    message("copying assets in build")
+    add_custom_target(copyAssetsOver
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_CURRENT_SOURCE_DIR}/assets
+        ${CMAKE_CURRENT_BINARY_DIR}/assets
+        COMMENT "Copying assets to build directory"
+    )
+    add_dependencies(${PROJECT_NAME} copyAssetsOver) 
+endif()
 
 add_definitions( -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} )
 
