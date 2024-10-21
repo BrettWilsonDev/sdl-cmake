@@ -473,10 +473,18 @@ endif()
 
 if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/assets)
     message("copying assets in build")
+    set(destination_dir ${CMAKE_CURRENT_BINARY_DIR}/assets)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+        if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+            set(destination_dir ${CMAKE_CURRENT_BINARY_DIR}/debug/assets)
+        else()
+            set(destination_dir ${CMAKE_CURRENT_BINARY_DIR}/release/assets)
+        endif()
+    endif()
     add_custom_target(copyAssetsOver
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_CURRENT_SOURCE_DIR}/assets
-        ${CMAKE_CURRENT_BINARY_DIR}/assets
+        ${destination_dir}
         COMMENT "Copying assets to build directory"
     )
     add_dependencies(${PROJECT_NAME} copyAssetsOver) 
