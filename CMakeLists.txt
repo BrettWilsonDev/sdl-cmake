@@ -20,6 +20,7 @@ option(USE_BOX2D "Use Box2D" OFF)
 option(USE_BULLET3 "Use Bullet Physics 3D" OFF)
 option(USE_REACTPHYSICS3D "Use React Physics 3D" OFF)
 option(USE_JOLTPHYSICS "Use Jolt Physics 3D" OFF)
+option(USE_PHYSX "Use PhysX" ON)
 
 ##########################################################################################
 # MSVC runtime linking
@@ -411,6 +412,35 @@ if(USE_JOLTPHYSICS)
     
     # add the dependency here to be linked
     list(APPEND LIBRARIES Jolt)
+endif()
+
+##########################################################################################
+# Physx Setup
+##########################################################################################
+
+if(USE_PHYSX)
+    if (${PLATFORM} STREQUAL "Web")
+        set(physx_tag "PhysX-web")
+        set(build_dir "build-em")
+    else()
+        set(physx_tag "head")
+        set(build_dir "build")
+    endif()
+
+    if(WIN32)
+        option(USE_UNIX "" OFF)
+    endif()
+
+    set(dep physx)
+    add_git_dependency(
+        ${dep}
+        https://github.com/BrettWilsonBDW/PhysX-cmake.git
+        ${physx_tag}
+    )
+
+    include_directories(${CMAKE_CURRENT_LIST_DIR}/${build_dir}/_deps/physx-cmake-src/physx/include)
+
+    list(APPEND LIBRARIES ${dep})
 endif()
 
 
