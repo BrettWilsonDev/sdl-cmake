@@ -438,7 +438,7 @@ if(USE_PHYSX)
         ${physx_tag}
     )
 
-    include_directories(${CMAKE_CURRENT_LIST_DIR}/${build_dir}/_deps/physx-cmake-src/physx/include)
+    include_directories(${CMAKE_CURRENT_LIST_DIR}/${build_dir}/_deps/physx-src/physx/include)
 
     list(APPEND LIBRARIES ${dep})
 endif()
