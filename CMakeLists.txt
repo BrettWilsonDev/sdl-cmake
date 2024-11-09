@@ -166,13 +166,17 @@ if(USE_SDL2 AND NOT ${PLATFORM} STREQUAL "Web")
 
 endif()
 
-if(USE_SDL2 AND ${PLATFORM} STREQUAL "Web")
+if((USE_SDL2) AND (${PLATFORM} STREQUAL "Web"))
     FetchContent_Declare(SDL2
         GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
         GIT_TAG        SDL2
         GIT_SHALLOW    TRUE
         GIT_PROGRESS   TRUE
     )
+
+    if(NOT SDL2_POPULATED)
+        FetchContent_Populate(SDL2)
+    endif()
 
     FetchContent_Declare(SDL2_image
         GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
@@ -181,8 +185,12 @@ if(USE_SDL2 AND ${PLATFORM} STREQUAL "Web")
         GIT_PROGRESS   TRUE
     )
 
-    include_directories(RECURSE build/_deps/sdl2-src/include)
-    include_directories(RECURSE build/_deps/sdl2_image-src/include)
+    if(NOT SDL2_image_POPULATED)
+        FetchContent_Populate(SDL2_image)
+    endif()
+
+    include_directories(RECURSE build-em/_deps/sdl2-src/include)
+    include_directories(RECURSE build-em/_deps/sdl2_image-src/include)
 endif()
 
 
