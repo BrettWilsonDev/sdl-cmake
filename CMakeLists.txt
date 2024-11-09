@@ -20,7 +20,7 @@ option(USE_BOX2D "Use Box2D" OFF)
 option(USE_BULLET3 "Use Bullet Physics 3D" OFF)
 option(USE_REACTPHYSICS3D "Use React Physics 3D" OFF)
 option(USE_JOLTPHYSICS "Use Jolt Physics 3D" OFF)
-option(USE_PHYSX "Use PhysX" ON)
+option(USE_PHYSX "Use PhysX" OFF)
 
 ##########################################################################################
 # MSVC runtime linking
@@ -136,7 +136,8 @@ if(USE_SDL2 AND NOT ${PLATFORM} STREQUAL "Web")
     if(NOT ${dep}_POPULATED)
     endif()
 
-    list(APPEND LIBRARIES SDL2main SDL2-static)
+    list(APPEND LIBRARIES SDL2main)
+    list(APPEND LIBRARIES SDL2-static)
 endif()
 
 if(USE_SDL2 AND NOT ${PLATFORM} STREQUAL "Web")
@@ -164,6 +165,26 @@ if(USE_SDL2 AND NOT ${PLATFORM} STREQUAL "Web")
     list(APPEND LIBRARIES SDL2_image)
 
 endif()
+
+if(USE_SDL2 AND ${PLATFORM} STREQUAL "Web")
+    FetchContent_Declare(SDL2
+        GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+        GIT_TAG        SDL2
+        GIT_SHALLOW    TRUE
+        GIT_PROGRESS   TRUE
+    )
+
+    FetchContent_Declare(SDL2_image
+        GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
+        GIT_TAG        SDL2
+        GIT_SHALLOW    TRUE
+        GIT_PROGRESS   TRUE
+    )
+
+    include_directories(RECURSE build/_deps/sdl2-src/include)
+    include_directories(RECURSE build/_deps/sdl2_image-src/include)
+endif()
+
 
 ##########################################################################################
 # Glad Setup

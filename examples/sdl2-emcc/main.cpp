@@ -1,10 +1,14 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <iostream>
-
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
+#include <SDL.h>
+#include <SDL_image.h>
+#else
+#include <SDL2/SDL.h>
+#include <SDL_image.h>
 #endif
+
+#include <iostream>
+
 
 struct context
 {
