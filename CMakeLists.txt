@@ -10,10 +10,11 @@ set(CMAKE_CXX_STANDARD 20)
 # Configurable options
 ##########################################################################################
 
+# library toggles
 option(USE_SDL3 "Use SDL3" ON)
 option(USE_SDL2 "Use SDL2" OFF)
 option(USE_GLAD "Use Glad" OFF)
-option(USE_IMGUI "Use ImGui" OFF)
+option(USE_IMGUI "Use ImGui" ON)
 option(USE_LDTKLOADER "Use LDtk Loader" OFF)
 option(USE_FMT "Use fmt" OFF)
 option(USE_BOX2D "Use Box2D" OFF)
@@ -21,6 +22,9 @@ option(USE_BULLET3 "Use Bullet Physics 3D" OFF)
 option(USE_REACTPHYSICS3D "Use React Physics 3D" OFF)
 option(USE_JOLTPHYSICS "Use Jolt Physics 3D" OFF)
 option(USE_PHYSX "Use PhysX" OFF)
+
+# build options
+option(BUILD_SDL_SHARED_LIB "Build SDL as a shared library" OFF)
 
 ##########################################################################################
 # MSVC runtime linking
@@ -73,7 +77,14 @@ endfunction()
 if(USE_SDL3)
     set(SDL3IMAGE_INSTALL OFF)
     set(BUILD_SHARED_LIBS FALSE)
+    set(SDL_LIB_TYPE static)
 
+    if(BUILD_SDL_SHARED_LIB)
+        set(BUILD_SHARED_LIBS TRUE)
+        set(SDL_LIB_TYPE shared)
+        option(SDL_SHARED "Build SDL as a shared library" ON)
+    endif()
+    
     set(dep SDL3)
     add_git_dependency(
         ${dep}
@@ -85,8 +96,7 @@ if(USE_SDL3)
     if(NOT ${dep}_POPULATED)
     endif()
 
-    list(APPEND LIBRARIES SDL3::SDL3-static)
-
+    list(APPEND LIBRARIES SDL3::SDL3-${SDL_LIB_TYPE})
 endif()
 
 if(USE_SDL3)
@@ -111,8 +121,7 @@ if(USE_SDL3)
 
     include_directories(RECURSE build/_deps/sdl3-src/include/SDL3/)
         
-    list(APPEND LIBRARIES SDL3_image::SDL3_image-static)
-
+    list(APPEND LIBRARIES SDL3_image::SDL3_image-${SDL_LIB_TYPE})
 endif()
 
 ##########################################################################################
@@ -237,8 +246,8 @@ if(USE_IMGUI)
 
     FetchContent_GetProperties(imgui)
     if (NOT imgui_POPULATED)
-    FetchContent_Populate(imgui)
-    add_subdirectory(${imgui_SOURCE_DIR})
+        FetchContent_Populate(imgui)
+        add_subdirectory(${imgui_SOURCE_DIR})
     endif()
 
     if(USE_SDL3)
@@ -269,6 +278,16 @@ if(USE_IMGUI)
 
     target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR})
     target_include_directories(imgui PRIVATE ${CMAKE_CURRENT_LIST_DIR}/build/_deps/sdl${SDL_VERSION}-src/include/)
+
+    # target_link_libraries(imgui PUBLIC
+    #     ${CMAKE_CURRENT_LIST_DIR}/build/_deps/sdl${SDL_VERSION}-src/src/SDL3.lib
+    # )
+
+    if(BUILD_SDL_SHARED_LIB)
+        target_link_libraries(imgui SDL3::SDL3-shared)
+    endif()
+
+
 
     FetchContent_MakeAvailable(imgui)
     list(APPEND LIBRARIES imgui)
@@ -570,7 +589,7 @@ if (CMAKE_BUILD_TYPE MATCHES "Debug")
         target_compile_definitions(${PROJECT_NAME} PUBLIC ASSETS_PATH="${CMAKE_CURRENT_SOURCE_DIR}/assets/")   
     endif()
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -DNDEBUG")
     if(NOT noAssets AND NOT ${PLATFORM} STREQUAL "Web")
         # Set the asset path macro in release mode to a relative path that assumes the assets folder is in the same directory as the game executable
         target_compile_definitions(${PROJECT_NAME} PUBLIC ASSETS_PATH="./assets/")
