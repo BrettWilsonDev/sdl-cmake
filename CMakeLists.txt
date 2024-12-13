@@ -14,7 +14,7 @@ set(CMAKE_CXX_STANDARD 20)
 option(USE_SDL3 "Use SDL3" ON)
 option(USE_SDL2 "Use SDL2" OFF)
 option(USE_GLAD "Use Glad" OFF)
-option(USE_IMGUI "Use ImGui" ON)
+option(USE_IMGUI "Use ImGui" OFF)
 option(USE_LDTKLOADER "Use LDtk Loader" OFF)
 option(USE_FMT "Use fmt" OFF)
 option(USE_BOX2D "Use Box2D" OFF)
@@ -24,7 +24,7 @@ option(USE_JOLTPHYSICS "Use Jolt Physics 3D" OFF)
 option(USE_PHYSX "Use PhysX" OFF)
 
 # build options
-option(BUILD_SDL_SHARED_LIB "Build SDL as a shared library" OFF)
+option(BUILD_SDL_SHARED_LIB "Build SDL as a shared library" ON)
 
 ##########################################################################################
 # MSVC runtime linking
@@ -284,13 +284,18 @@ if(USE_IMGUI)
     target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR})
     target_include_directories(imgui PRIVATE ${CMAKE_CURRENT_LIST_DIR}/build/_deps/sdl${SDL_VERSION}-src/include/)
 
-    # target_link_libraries(imgui PUBLIC
-    #     ${CMAKE_CURRENT_LIST_DIR}/build/_deps/sdl${SDL_VERSION}-src/src/SDL3.lib
-    # )
-
     if(BUILD_SDL_SHARED_LIB)
-        # target_link_libraries(imgui SDL3::SDL3-shared)
-        target_link_libraries(imgui SDL2)
+        if (USE_SDL3)
+            target_link_libraries(imgui SDL3::SDL3-shared)
+        else()
+            target_link_libraries(imgui SDL2)
+        endif()
+    else()
+        if (USE_SDL3)
+            target_link_libraries(imgui SDL3::SDL3-static)
+        else()
+            target_link_libraries(imgui SDL2-static)
+        endif()
     endif()
 
     FetchContent_MakeAvailable(imgui)
