@@ -101,12 +101,10 @@ endif()
 
 if(USE_SDL3)
     set(SDL3IMAGE_INSTALL OFF)
-    set(BUILD_SHARED_LIBS FALSE)
 
     if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         set(SDLIMAGE_AVIF OFF CACHE BOOL "Support loading AVIF images" FORCE)
     endif()
-    
     
     set(dep SDL3_image)
     add_git_dependency(
@@ -134,6 +132,11 @@ if(USE_SDL2 AND NOT ${PLATFORM} STREQUAL "Web")
     set(SDL2IMAGE_INSTALL OFF)
     set(BUILD_SHARED_LIBS FALSE)
 
+    if(BUILD_SDL_SHARED_LIB)
+        set(BUILD_SHARED_LIBS TRUE)
+        option(SDL_SHARED "Build SDL as a shared library" ON)
+    endif()
+
     set(dep SDL2)
     add_git_dependency(
         ${dep}
@@ -146,17 +149,20 @@ if(USE_SDL2 AND NOT ${PLATFORM} STREQUAL "Web")
     endif()
 
     list(APPEND LIBRARIES SDL2main)
-    list(APPEND LIBRARIES SDL2-static)
+    
+    if(BUILD_SDL_SHARED_LIB)
+        list(APPEND LIBRARIES SDL2)
+    else()
+        list(APPEND LIBRARIES SDL2-static)
+    endif()
 endif()
 
 if(USE_SDL2 AND NOT ${PLATFORM} STREQUAL "Web")
     set(SDL2IMAGE_INSTALL OFF)
-    set(BUILD_SHARED_LIBS FALSE)
 
     if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         set(SDL2IMAGE_AVIF OFF CACHE BOOL "Support loading AVIF images" FORCE)
     endif()
-    
     
     set(dep SDL2_image)
     add_git_dependency(
@@ -170,9 +176,8 @@ if(USE_SDL2 AND NOT ${PLATFORM} STREQUAL "Web")
     endif()
 
     include_directories(RECURSE build/_deps/sdl2-src/include/SDL2/)
-        
-    list(APPEND LIBRARIES SDL2_image)
 
+    list(APPEND LIBRARIES SDL2_image)
 endif()
 
 if((USE_SDL2) AND (${PLATFORM} STREQUAL "Web"))
@@ -284,10 +289,9 @@ if(USE_IMGUI)
     # )
 
     if(BUILD_SDL_SHARED_LIB)
-        target_link_libraries(imgui SDL3::SDL3-shared)
+        # target_link_libraries(imgui SDL3::SDL3-shared)
+        target_link_libraries(imgui SDL2)
     endif()
-
-
 
     FetchContent_MakeAvailable(imgui)
     list(APPEND LIBRARIES imgui)
