@@ -24,7 +24,7 @@ option(USE_JOLTPHYSICS "Use Jolt Physics 3D" OFF)
 option(USE_PHYSX "Use PhysX" OFF)
 
 # build options
-option(BUILD_SDL_SHARED_LIB "Build SDL as a shared library" ON)
+option(BUILD_SDL_SHARED_LIB "Build SDL as a shared library" OFF)
 
 ##########################################################################################
 # MSVC runtime linking
