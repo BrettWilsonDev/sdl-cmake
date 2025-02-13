@@ -52,7 +52,7 @@ option(USE_PHYSX "Use PhysX" OFF)
 ## supported windows and linux
 
 ## Clone the repository
-git clone https://github.com/BrettWilsonBDW/sdl-cmake.git
+git clone https://github.com/BrettWilsonDev/sdl-cmake.git
 
 ## Navigate to the project directory
 cd sdl-cmake
