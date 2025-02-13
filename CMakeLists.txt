@@ -491,7 +491,7 @@ if(USE_PHYSX)
     set(dep physx)
     add_git_dependency(
         ${dep}
-        https://github.com/BrettWilsonBDW/PhysX-cmake.git
+        https://github.com/BrettWilsonDev/PhysX-cmake.git
         ${physx_tag}
     )
 
