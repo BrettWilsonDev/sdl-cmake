@@ -79,6 +79,8 @@ if(USE_SDL3)
     set(BUILD_SHARED_LIBS FALSE)
     set(SDL_LIB_TYPE static)
 
+    set(SDL_RENDER_DEFAULT ON)
+
     if(BUILD_SDL_SHARED_LIB)
         set(BUILD_SHARED_LIBS TRUE)
         set(SDL_LIB_TYPE shared)
